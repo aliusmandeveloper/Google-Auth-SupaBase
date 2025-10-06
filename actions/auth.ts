@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/utils/supabase/server";
 // import { redirect } from "next/dist/server/api-utils";
 import { redirect } from "next/navigation";
+import { headers } from "next/headers";
 export async function SignUp(formData: FormData) {
   const supabase = await createClient();
 
@@ -78,4 +79,22 @@ export async function SignOut() {
   }
   revalidatePath("/", "layout");
   redirect("/login");
+}
+
+export async function signInWithGithub() {
+  const origin = (await headers()).get("origin");
+  const supabase = await createClient();
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: "github",
+    options: {
+      redirectTo: `${origin}/auth/callback`,
+    },
+  });
+  if (error) {
+    console.log(error);
+    redirect("/error");
+  } else if (data?.url) {
+    // console.log(data.url);
+    return redirect(data.url);
+  }
 }
