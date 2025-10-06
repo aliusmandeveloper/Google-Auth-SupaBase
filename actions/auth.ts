@@ -2,7 +2,8 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/utils/supabase/server";
-
+// import { redirect } from "next/dist/server/api-utils";
+import { redirect } from "next/navigation";
 export async function SignUp(formData: FormData) {
   const supabase = await createClient();
 
@@ -46,7 +47,35 @@ export async function SignIn(formData: FormData) {
   if (error) {
     return { status: error.message, user: null };
   }
-  //create a todo user instance in user-profiles table
+
+  const { data: existingUser } = await supabase
+    .from("user_profiles")
+    .select("*")
+    .eq("email", userData?.email)
+    .limit(1)
+    .single();
+  if (!existingUser) {
+    const { error: inserError } = await supabase.from("user_profiles").insert({
+      email: data?.user.email,
+      username: data?.user?.user_metadata?.username,
+    });
+    if (inserError) {
+      return {
+        status: inserError?.message,
+        user: null,
+      };
+    }
+  }
+
   revalidatePath("/", "layout");
   return { status: "success", user: data.user };
+}
+export async function SignOut() {
+  const supabase = await createClient();
+  const { error } = await supabase.auth.signOut();
+  if (error) {
+    redirect("/error");
+  }
+  revalidatePath("/", "layout");
+  redirect("/login");
 }
