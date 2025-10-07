@@ -15,7 +15,10 @@ const ResetPassword = () => {
     setError(null);
 
     const formData = new FormData(event.currentTarget);
-    const result = await resetPassword(formData, searchParams.get("code") as string);
+    const result = await resetPassword(
+      formData,
+      searchParams.get("code") as string
+    );
     if (result.status === "success") {
       alert("Password reset successful!");
       router.push("/");

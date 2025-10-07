@@ -11,13 +11,11 @@ const ForgotPassword = () => {
     setLoading(true);
     setError(null);
 
-
     const formData = new FormData(event.currentTarget);
-    const result=await forgotPassword(formData);
-    if(result.status==="success"){
+    const result = await forgotPassword(formData);
+    if (result.status === "success") {
       alert("Password reset email sent. Please check your inbox.");
-    }
-    else{
+    } else {
       setError(result.status || "An error occurred. Please try again.");
     }
     setLoading(false);
