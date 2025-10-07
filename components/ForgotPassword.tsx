@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import AuthButton from "./AuthButton";
 import { forgotPassword } from "@/actions/auth";
-
+//reset is not working
 const ForgotPassword = () => {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
